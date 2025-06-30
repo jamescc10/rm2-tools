@@ -1,6 +1,7 @@
 const loadingSVGElement = document.getElementById("loadingSVG");
 const dataListElement = document.getElementById("dataList");
 const dataNotPublicTextElement = document.getElementById("dataNotPublicText");
+const rateLimitedTextElement = document.getElementById("rateLimited");
 let isLoading = false;
 
 const gameid = "1280770";
@@ -42,6 +43,17 @@ async function getDataOne(profileLink, lb) {
     const url = corsProxy + steamurl;
     const res = await fetch(url);
     const text = await res.text();
+
+    console.log(res.status);
+    if(res.status == 403) {
+        console.log("Rate limited");
+        rateLimitedTextElement.style.display = "block";
+        dataListElement.style.display = "none";
+        loadingSVGElement.style.display = "none";
+
+        return;
+    }
+
     const parser = new DOMParser();
     const html = parser.parseFromString(text, "text/html");
     const allA = html.querySelectorAll("a");
@@ -97,6 +109,7 @@ async function submitButtonPress() {
     loadingSVGElement.style.display = "block";
     dataListElement.style.display = "flex";
     dataNotPublicTextElement.style.display = "none";
+    rateLimitedTextElement.style.display = "none";
 
     let profile = document.getElementById("steamIdInput").value;
     if(profile[profile.length-1] != "/")
