@@ -37,8 +37,8 @@ const lbName = [
 
 const corsProxy = "https://corsproxy.io/?url=";
 
-async function getDataID(steamid, lb) {
-    const steamurl = `https://steamcommunity.com/id/${steamid}/stats/${gameid}/achievements/?tab=leaderboards&lb=${lb}`;
+async function getDataOne(profileLink, lb) {
+    const steamurl = `${profileLink}stats/${gameid}/achievements/?tab=leaderboards&lb=${lb}`;
     const url = corsProxy + steamurl;
     const res = await fetch(url);
     const text = await res.text();
@@ -49,7 +49,7 @@ async function getDataID(steamid, lb) {
     allA.forEach((element) => {
         const href = element.getAttribute("href");
         if(href) {
-            if(href.startsWith(`https://steamcommunity.com/id/${steamid}/stats/${gameid}/`)) {
+            if(href.startsWith(`${profileLink}stats/${gameid}/`)) {
                 data.name = element.innerText;
                 
                 element.parentElement.parentElement.parentElement.childNodes.forEach((e) => {
@@ -67,48 +67,14 @@ async function getDataID(steamid, lb) {
     return data;
 }
 
-async function getDataProfile(steamid, lb) {
-    const steamurl = `https://steamcommunity.com/profiles/${steamid}/stats/${gameid}/achievements/?tab=leaderboards&lb=${lb}`;
-    const url = corsProxy + steamurl;
-    const res = await fetch(url);
-    const text = await res.text();
-    const parser = new DOMParser();
-    const html = parser.parseFromString(text, "text/html");
-    const allA = html.querySelectorAll("a");
+async function getData(profile) {
     let data = {};
-    allA.forEach((element) => {
-        const href = element.getAttribute("href");
-        if(href) {
-            if(href.startsWith(`https://steamcommunity.com/profiles/${steamid}/stats/${gameid}/`)) {
-                data.name = element.innerText;
-                
-                element.parentElement.parentElement.parentElement.childNodes.forEach((e) => {
-                    if(e.nodeType == 1 && e.getAttribute("class")) {
-                        if(e.getAttribute("class") == "scoreh") {
-                            data.score = e.innerText.trim();
-                        } else if(e.getAttribute("class") == "globalRankh") {
-                            data.rank = e.innerText.trim().slice(13,e.innerText.trim().length);
-                        }
-                    }
-                });
-            }
-        }
-    });
-    return data;
-}
-
-async function getData(steamid) {
-    const isID = (/[0-9]/.test(steamid[0])) ? true : false;
-    let data = {};
-    data.steamid = steamid;
     data.score = new Array();
 
     for(let i = 0; i < lb.length; ++i) {
         let d = undefined;
-        if(isID)
-            d = await getDataProfile(steamid, lb[i]);
-        else
-            d = await getDataID(steamid, lb[i]);
+
+        d = await getDataOne(profile, lb[i]);
 
         if(d.name != undefined) {
             data.name = d.name;
@@ -132,8 +98,11 @@ async function submitButtonPress() {
     dataListElement.style.display = "flex";
     dataNotPublicTextElement.style.display = "none";
 
-    const steamid = document.getElementById("steamIdInput").value;
-    const data = await getData(steamid);
+    let profile = document.getElementById("steamIdInput").value;
+    if(profile[profile.length-1] != "/")
+        profile = profile.padEnd(profile.length+1, "/");
+
+    const data = await getData(profile);
 
     if(await data.name == undefined) {
         console.log("Data is not public.");
@@ -147,11 +116,9 @@ async function submitButtonPress() {
     }
 
     data.score[1] = ["Level", data.score[1][1], Math.floor(Math.sqrt(Number(data.score[1][2].replace(/,/g, ""))/64))]; // EXP to Level
-    console.log(data);
 
     loadingSVGElement.style.display = "none";
     dataListElement.innerHTML = `
-    <span class='dataText semibold'>Steam ID - ${steamid}</span>
     <span class='dataText semibold'>Name - ${data.name}</span>
     <span class='dataText semibold'>${data.score[4 ][0]} - ${data.score[4 ][1]} - ${data.score[4 ][2]}</span>
     <span class='dataText semibold'>${data.score[7 ][0]} - ${data.score[7 ][1]} - ${data.score[7 ][2]}</span>
