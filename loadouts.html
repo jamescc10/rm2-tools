@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redmatch 2 Loadouts</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="css/loadout.css">
+
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="title">
+        <span>Loadouts</span>
+    </div>
+    <div id="list">
+        <div id="listList">
+        </div>
+        <button onclick="create()">Create</button>
+    </div>
+    <main id="data">
+        <span id="dataName">Loadout 1</span>
+        <hr>
+        <span id="dataOne" onclick="selectedWeapon('one')">Weapon 1 - AK</span>
+        <br>
+        <span id="dataTwo" onclick="selectedWeapon('two')">Weapon 2 - Shotgun</span>
+        <br>
+        <span id="dataThree" onclick="selectedWeapon('three')">Weapon 3 - Sniper</span>
+        <hr>
+        <button onclick="ex()">Export</button>
+        <button onclick="copy()">Copy</button>
+        <span id="dataError"><hr>if theres no weapons in loadout it wont be read</span>
+
+        <dialog id="selWeapon">
+            <button onclick="selectWeapon('Rifle')">AK</button>
+            <button onclick="selectWeapon('Shotgun')">Shotgun</button>
+            <button onclick="selectWeapon('Sniper')">Sniper</button>
+            <button onclick="selectWeapon('Revolver')">Revolver</button>
+            <button onclick="selectWeapon('SMG')">SMG</button>
+            <button onclick="selectWeapon('None')">None</button>
+            <button onclick="closeDialog()">Close</button>
+        </dialog>
+    </main>
+    <script src="js/loadout.js"></script>
+</body>
+</html>
