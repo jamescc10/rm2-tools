@@ -1,2 +1,4 @@
-# Redmatch 2 Stats
-Get Redmatch 2 stats from steam profile link.
+# Redmatch 2 Tools
+There's two tools so far.
+The first one is to get stats from a steam profile url.
+The second tool is to create loadouts.
